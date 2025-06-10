@@ -1,0 +1,28 @@
+﻿@* 
+    Alert Component - Conditionally renders a Bootstrap alert box
+    Used to display messages, warnings, or notifications to users
+    p.51
+*@
+@if (Show)
+{
+    @* Bootstrap alert with secondary styling and top margin *@
+    <div class="alert alert-secondary mt-4" role="alert">
+        @* Render any content passed as child content *@
+        @ChildContent
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Controls whether the alert is visible or hidden
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; }
+
+    /// <summary>
+    /// The content to display inside the alert box
+    /// Can contain any HTML, text, or other Blazor components
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+}
