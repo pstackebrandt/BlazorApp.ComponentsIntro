@@ -1,0 +1,14 @@
+﻿@page "/alerts"
+@rendermode InteractiveServer
+
+<PageTitle>Alerts</PageTitle>
+
+<h2>Simple Alert</h2>
+
+<Alert Show="@ShowAlert">
+    <p>This is an alert message run permanently.</p>
+</Alert>
+
+@code {
+    private bool ShowAlert = true;  
+}
