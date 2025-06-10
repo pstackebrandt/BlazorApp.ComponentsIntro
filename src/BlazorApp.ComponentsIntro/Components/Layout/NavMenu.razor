@@ -4,10 +4,19 @@
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<input type="checkbox" 
+       title="Navigation menu" 
+       class="navbar-toggler" 
+       aria-label="Toggle navigation menu"
+       aria-expanded="false"
+       aria-controls="main-navigation" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
+<div class="nav-scrollable" 
+     onclick="document.querySelector('.navbar-toggler').click()"
+     id="main-navigation">
+    <nav class="nav flex-column" 
+         role="navigation" 
+         aria-label="Main navigation">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
