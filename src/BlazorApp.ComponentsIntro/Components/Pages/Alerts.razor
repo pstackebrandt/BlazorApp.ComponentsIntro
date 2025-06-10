@@ -1,22 +1,47 @@
 ﻿@page "/alerts"
 @rendermode InteractiveServer
+@using BlazorApp.ComponentsIntro.Models
 
 <PageTitle>Alerts</PageTitle>
 
-<h2>Permanent Alert</h2>
+<section class="mb-4">
+    <h2>Permanent Alert</h2>
 
-<Alert Show="true">
-    <span class="oi oi-check mr-2" aria-hidden="true">This is an alert message run permanently.</span>
-</Alert>
+    <Alert Show="true" AlertType="AlertType.Success">
+        <span class="oi oi-check mr-2" aria-hidden="true"></span>
+        This is an alert message run permanently.
+    </Alert>
+</section>
 
-<h2>Conditional Alert</h2>
+<section class="mt-3 mb-4">
+    <h2>Conditional Alert</h2>
 
-<Alert Show="@ShowAlert">
-    <span class="oi oi-check mr-2" aria-hidden="true"></span>
-    <strong>Blazor is awesome!</strong>
-</Alert>
+    <Alert Show="@ShowAlert" AlertType="AlertType.Success">
+        <span class="oi oi-check mr-2" aria-hidden="true"></span>
+        <strong>Blazor is awesome!</strong>
+    </Alert>
 
-<button @onclick="ToggleAlert" class="btn btn-success">Toggle Alert</button>
+    <button @onclick="ToggleAlert" class="btn btn-success mt-2 mb-3">Toggle Alert</button>
+</section>
+
+<section class="mt-3 mb-4">
+    <h2>Different Alert Types</h2>
+
+    <Alert Show="true" AlertType="AlertType.Info">
+        <span class="bi bi-info-circle-fill me-2" aria-hidden="true"></span>
+        <strong>Info:</strong> This is an informational alert.
+    </Alert>
+
+    <Alert Show="true" AlertType="AlertType.Warning">
+        <span class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></span>
+        <strong>Warning:</strong> This is a warning alert.
+    </Alert>
+
+    <Alert Show="true" AlertType="AlertType.Danger">
+        <span class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></span>
+        <strong>Danger:</strong> This is a red danger alert!
+    </Alert>
+</section>
 
 @code {
     private bool ShowAlert = false;
