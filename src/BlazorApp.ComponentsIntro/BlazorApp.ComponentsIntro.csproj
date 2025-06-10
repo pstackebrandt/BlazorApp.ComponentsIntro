@@ -14,7 +14,7 @@
     <FileVersion>1.0.0.0</FileVersion>
     
     <!-- Emit compiler-generated files to disk for debugging/inspection, see chapter 2 -->
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <EmitCompilerGeneratedFiles>false</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
 </Project>
