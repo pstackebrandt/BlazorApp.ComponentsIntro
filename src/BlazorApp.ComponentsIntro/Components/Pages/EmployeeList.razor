@@ -1,0 +1,17 @@
+﻿@using BlazorApp.ComponentsIntro.Entities
+
+<h3>All Employees</h3>
+<ul>
+    @foreach (var employee in Employees)
+    {
+        <li>@employee.FirstName @employee.LastName</li>
+    }
+</ul>
+
+@code {
+    private List<Employee> Employees = [
+        new Employee { FirstName = "John", LastName = "Doe" },
+        new Employee { FirstName = "Jane", LastName = "Doe" },
+        new Employee { FirstName = "Jim", LastName = "Beam" },
+    ];
+}
