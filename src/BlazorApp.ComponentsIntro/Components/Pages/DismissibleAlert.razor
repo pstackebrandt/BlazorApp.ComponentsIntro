@@ -1,0 +1,11 @@
+﻿@* Conditionally render the alert only when Show parameter is true *@
+@if (Show)
+{
+    @* Bootstrap dismissible alert with warning styling *@
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @* Render the content passed from parent component *@
+        @ChildContent
+        @* Blazor click handler for dismiss functionality *@
+        <button type="button" class="btn-close" @onclick="Dismiss" aria-label="Close"></button>
+    </div>
+}
