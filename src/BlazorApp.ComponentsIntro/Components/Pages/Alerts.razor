@@ -3,12 +3,22 @@
 
 <PageTitle>Alerts</PageTitle>
 
-<h2>Simple Alert</h2>
+<h2>Permanent Alert</h2>
 
-<Alert Show="@ShowAlert">
-    <p>This is an alert message run permanently.</p>
+<Alert Show="true">
+    <span class="oi oi-check mr-2" aria-hidden="true">This is an alert message run permanently.</span>
 </Alert>
 
+<h2>Conditional Alert</h2>
+
+<Alert Show="@ShowAlert">
+    <span class="oi oi-check mr-2" aria-hidden="true"></span>
+    <strong>Blazor is awesome!</strong>
+</Alert>
+
+<button @onclick="ToggleAlert" class="btn btn-success">Toggle Alert</button>
+
 @code {
-    private bool ShowAlert = true;  
+    private bool ShowAlert = false;
+    public void ToggleAlert() => ShowAlert = !ShowAlert;
 }
