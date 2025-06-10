@@ -4,6 +4,17 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- Version properties -->
+    <!-- NuGet package version (semantic versioning: Major.Minor.Patch) -->
+    <Version>1.0.0</Version>
+    <!-- .NET assembly version for runtime binding (4-part format) -->
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <!-- File version displayed in Windows file properties -->
+    <FileVersion>1.0.0.0</FileVersion>
+    
+    <!-- Emit compiler-generated files to disk for debugging/inspection, see chapter 2 -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
 </Project>
