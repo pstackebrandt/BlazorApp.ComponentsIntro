@@ -19,14 +19,14 @@
          style="z-index: 1050; background-color: rgba(0,0,0,0.3);"
          @onclick="ToggleComments">
         
-        <!-- Draggable modal dialog -->
+        <!-- Resizable modal dialog -->
         <div id="@modalId" 
-             class="position-absolute bg-white border shadow-lg rounded draggable-modal" 
-             style="top: 20%; left: 20%; width: 60%; max-width: 800px; min-width: 400px; z-index: 1051;"
+             class="position-absolute bg-white border shadow-lg rounded draggable-modal resizable-modal" 
+             style="top: 20%; left: 20%; width: 600px; height: 400px; min-width: 400px; min-height: 300px; max-width: 90vw; max-height: 90vh; z-index: 1051; display: flex; flex-direction: column;"
              @onclick:stopPropagation="true">
             
             <!-- Modal header with drag handle -->
-            <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-light rounded-top drag-handle"
+            <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-light rounded-top drag-handle flex-shrink-0"
                  style="cursor: move; user-select: none;">
                 <h5 class="mb-0">
                     <span class="me-2">@ButtonIcon</span>
@@ -41,22 +41,30 @@
                 </button>
             </div>
             
-            <!-- Modal content -->
-            <div class="p-3">
+            <!-- Modal content - fills remaining space -->
+            <div class="p-3 flex-grow-1 d-flex flex-column">
                 <textarea id="@textareaId" 
-                          class="form-control" 
-                          rows="@CalculatedRows" 
-                          style="resize: both; min-height: 200px;"
+                          class="form-control flex-grow-1" 
+                          style="resize: none; min-height: 150px; border: none; outline: none; box-shadow: none;"
                           @bind="currentComments"
                           placeholder="@Placeholder">
                 </textarea>
             </div>
             
             <!-- Modal footer -->
-            <div class="p-2 border-top bg-light rounded-bottom text-muted small">
-                <span class="me-3">💡 Tip: Drag the header to move this window</span>
-                <span>📏 Resize: Use the corner handle</span>
+            <div class="p-2 border-top bg-light rounded-bottom text-muted small flex-shrink-0">
+                <span class="me-3">💡 Tip: Drag header to move, drag corners/edges to resize</span>
             </div>
+            
+            <!-- Resize handles -->
+            <div class="resize-handle resize-handle-se"></div>
+            <div class="resize-handle resize-handle-s"></div>
+            <div class="resize-handle resize-handle-e"></div>
+            <div class="resize-handle resize-handle-ne"></div>
+            <div class="resize-handle resize-handle-nw"></div>
+            <div class="resize-handle resize-handle-sw"></div>
+            <div class="resize-handle resize-handle-n"></div>
+            <div class="resize-handle resize-handle-w"></div>
         </div>
     </div>
 }
@@ -74,10 +82,89 @@
         cursor: grabbing !important;
         background-color: #dee2e6 !important;
     }
+    
+    .resizable-modal {
+        position: relative;
+    }
+    
+    /* Resize handles */
+    .resize-handle {
+        position: absolute;
+        background: transparent;
+    }
+    
+    .resize-handle-se {
+        bottom: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        cursor: se-resize;
+    }
+    
+    .resize-handle-s {
+        bottom: 0;
+        left: 12px;
+        right: 12px;
+        height: 6px;
+        cursor: s-resize;
+    }
+    
+    .resize-handle-e {
+        top: 12px;
+        right: 0;
+        bottom: 12px;
+        width: 6px;
+        cursor: e-resize;
+    }
+    
+    .resize-handle-ne {
+        top: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        cursor: ne-resize;
+    }
+    
+    .resize-handle-nw {
+        top: 0;
+        left: 0;
+        width: 12px;
+        height: 12px;
+        cursor: nw-resize;
+    }
+    
+    .resize-handle-sw {
+        bottom: 0;
+        left: 0;
+        width: 12px;
+        height: 12px;
+        cursor: sw-resize;
+    }
+    
+    .resize-handle-n {
+        top: 0;
+        left: 12px;
+        right: 12px;
+        height: 6px;
+        cursor: n-resize;
+    }
+    
+    .resize-handle-w {
+        top: 12px;
+        left: 0;
+        bottom: 12px;
+        width: 6px;
+        cursor: w-resize;
+    }
+    
+    /* Visual feedback on hover */
+    .resize-handle:hover {
+        background-color: rgba(13, 110, 253, 0.25);
+    }
 </style>
 
 <script>
-    window.makeDraggable = function(modalId) {
+    window.makeDraggableAndResizable = function(modalId) {
         const modal = document.getElementById(modalId);
         const dragHandle = modal?.querySelector('.drag-handle');
         
@@ -86,17 +173,14 @@
             return;
         }
         
+        // Dragging functionality
         let isDragging = false;
-        let currentX = 0;
-        let currentY = 0;
-        let initialX = 0;
-        let initialY = 0;
-        
-        // Remove any existing event listeners
-        dragHandle.onmousedown = null;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let modalStartX = 0;
+        let modalStartY = 0;
         
         dragHandle.onmousedown = function(e) {
-            // Don't drag when clicking the close button or other buttons
             if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
                 return;
             }
@@ -105,42 +189,139 @@
             isDragging = true;
             
             const rect = modal.getBoundingClientRect();
-            initialX = e.clientX - rect.left;
-            initialY = e.clientY - rect.top;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            modalStartX = rect.left;
+            modalStartY = rect.top;
             
             document.body.style.userSelect = 'none';
             dragHandle.style.cursor = 'grabbing';
         };
         
+        // Resizing functionality
+        let isResizing = false;
+        let resizeHandle = null;
+        let resizeStartX = 0;
+        let resizeStartY = 0;
+        let modalStartWidth = 0;
+        let modalStartHeight = 0;
+        let modalStartLeft = 0;
+        let modalStartTop = 0;
+        
+        const resizeHandles = modal.querySelectorAll('.resize-handle');
+        resizeHandles.forEach(handle => {
+            handle.onmousedown = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                isResizing = true;
+                resizeHandle = handle;
+                
+                const rect = modal.getBoundingClientRect();
+                resizeStartX = e.clientX;
+                resizeStartY = e.clientY;
+                modalStartWidth = rect.width;
+                modalStartHeight = rect.height;
+                modalStartLeft = rect.left;
+                modalStartTop = rect.top;
+                
+                document.body.style.userSelect = 'none';
+            };
+        });
+        
         document.onmousemove = function(e) {
-            if (!isDragging) return;
+            if (isDragging) {
+                e.preventDefault();
+                
+                const newX = modalStartX + (e.clientX - dragStartX);
+                const newY = modalStartY + (e.clientY - dragStartY);
+                
+                // Keep modal within viewport
+                const maxX = window.innerWidth - modal.offsetWidth;
+                const maxY = window.innerHeight - modal.offsetHeight;
+                
+                const clampedX = Math.max(0, Math.min(newX, maxX));
+                const clampedY = Math.max(0, Math.min(newY, maxY));
+                
+                modal.style.left = clampedX + 'px';
+                modal.style.top = clampedY + 'px';
+                modal.style.transform = 'none';
+            }
             
-            e.preventDefault();
-            
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
-            
-            // Keep modal within viewport
-            const modalRect = modal.getBoundingClientRect();
-            const maxX = window.innerWidth - modalRect.width;
-            const maxY = window.innerHeight - modalRect.height;
-            
-            currentX = Math.max(0, Math.min(currentX, maxX));
-            currentY = Math.max(0, Math.min(currentY, maxY));
-            
-            modal.style.left = currentX + 'px';
-            modal.style.top = currentY + 'px';
-            modal.style.transform = 'none';
+            if (isResizing && resizeHandle) {
+                e.preventDefault();
+                
+                const deltaX = e.clientX - resizeStartX;
+                const deltaY = e.clientY - resizeStartY;
+                
+                let newWidth = modalStartWidth;
+                let newHeight = modalStartHeight;
+                let newLeft = modalStartLeft;
+                let newTop = modalStartTop;
+                
+                if (resizeHandle.classList.contains('resize-handle-se')) {
+                    newWidth = modalStartWidth + deltaX;
+                    newHeight = modalStartHeight + deltaY;
+                } else if (resizeHandle.classList.contains('resize-handle-s')) {
+                    newHeight = modalStartHeight + deltaY;
+                } else if (resizeHandle.classList.contains('resize-handle-e')) {
+                    newWidth = modalStartWidth + deltaX;
+                } else if (resizeHandle.classList.contains('resize-handle-ne')) {
+                    newWidth = modalStartWidth + deltaX;
+                    newHeight = modalStartHeight - deltaY;
+                    newTop = modalStartTop + deltaY;
+                } else if (resizeHandle.classList.contains('resize-handle-nw')) {
+                    newWidth = modalStartWidth - deltaX;
+                    newHeight = modalStartHeight - deltaY;
+                    newLeft = modalStartLeft + deltaX;
+                    newTop = modalStartTop + deltaY;
+                } else if (resizeHandle.classList.contains('resize-handle-sw')) {
+                    newWidth = modalStartWidth - deltaX;
+                    newHeight = modalStartHeight + deltaY;
+                    newLeft = modalStartLeft + deltaX;
+                } else if (resizeHandle.classList.contains('resize-handle-n')) {
+                    newHeight = modalStartHeight - deltaY;
+                    newTop = modalStartTop + deltaY;
+                } else if (resizeHandle.classList.contains('resize-handle-w')) {
+                    newWidth = modalStartWidth - deltaX;
+                    newLeft = modalStartLeft + deltaX;
+                }
+                
+                // Apply constraints
+                const minWidth = parseInt(modal.style.minWidth) || 400;
+                const minHeight = parseInt(modal.style.minHeight) || 300;
+                const maxWidth = window.innerWidth * 0.9;
+                const maxHeight = window.innerHeight * 0.9;
+                
+                newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+                newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+                
+                // Keep within viewport bounds
+                newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - newWidth));
+                newTop = Math.max(0, Math.min(newTop, window.innerHeight - newHeight));
+                
+                modal.style.width = newWidth + 'px';
+                modal.style.height = newHeight + 'px';
+                modal.style.left = newLeft + 'px';
+                modal.style.top = newTop + 'px';
+                modal.style.transform = 'none';
+            }
         };
         
         document.onmouseup = function() {
-            if (!isDragging) return;
+            if (isDragging) {
+                isDragging = false;
+                document.body.style.userSelect = '';
+                dragHandle.style.cursor = 'move';
+            }
             
-            isDragging = false;
-            document.body.style.userSelect = '';
-            dragHandle.style.cursor = 'move';
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle = null;
+                document.body.style.userSelect = '';
+            }
         };
         
-        console.log('Drag functionality initialized for:', modalId);
+        console.log('Drag and resize functionality initialized for:', modalId);
     };
 </script> 

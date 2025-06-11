@@ -14,12 +14,6 @@ public partial class ImplementationComments : ComponentBase
     private string currentComments = string.Empty;
     private string textareaId = $"comments_{Guid.NewGuid():N}";
     private string modalId = $"modal_{Guid.NewGuid():N}";
-    private string dragHandleId = $"dragHandle_{Guid.NewGuid():N}";
-    
-    // Drag functionality variables
-    private bool isDragging = false;
-    private double offsetX = 0;
-    private double offsetY = 0;
 
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -36,13 +30,6 @@ public partial class ImplementationComments : ComponentBase
     /// </summary>
     [Parameter]
     public string IconSize { get; set; } = "fs-5";
-
-    /// <summary>
-    /// The size of the button using Bootstrap button size classes.
-    /// Options: btn-sm (small), empty string (normal), btn-lg (large)
-    /// </summary>
-    [Parameter]
-    public string ButtonSize { get; set; } = "";
 
     /// <summary>
     /// The text displayed on the toggle button and in tooltips 
@@ -96,6 +83,13 @@ public partial class ImplementationComments : ComponentBase
     public int CharsPerLine { get; set; } = 65;
 
     /// <summary>
+    /// The size of the button using Bootstrap button size classes.
+    /// Options: btn-sm (small), empty string (normal), btn-lg (large)
+    /// </summary>
+    [Parameter]
+    public string ButtonSize { get; set; } = "";
+
+    /// <summary>
     /// The padding of the button using Bootstrap padding classes.
     /// Options: px-1 (very tight), px-2 (tight), px-3 (normal), etc.
     /// </summary>
@@ -115,11 +109,6 @@ public partial class ImplementationComments : ComponentBase
     public bool InitiallyVisible { get; set; } = false;
 
     /// <summary>
-    /// Gets the calculated number of rows based on content length.
-    /// </summary>
-    private int CalculatedRows => CalculateOptimalRows();
-
-    /// <summary>
     /// Gets the tooltip text showing the current state and action.
     /// </summary>
     private string TooltipText => showComments ? $"Hide {ButtonText}" : $"Show {ButtonText}";
@@ -134,7 +123,7 @@ public partial class ImplementationComments : ComponentBase
     }
 
     /// <summary>
-    /// Toggles the visibility of the comments section and initializes drag functionality.
+    /// Toggles the visibility of the comments section and initializes drag and resize functionality.
     /// </summary>
     private async Task ToggleComments()
     {
@@ -146,12 +135,12 @@ public partial class ImplementationComments : ComponentBase
             await Task.Delay(10);
             try
             {
-                await JSRuntime.InvokeVoidAsync("makeDraggable", modalId);
+                await JSRuntime.InvokeVoidAsync("makeDraggableAndResizable", modalId);
             }
             catch (Exception ex)
             {
                 // Handle JS interop errors gracefully
-                Console.WriteLine($"Error initializing drag functionality: {ex.Message}");
+                Console.WriteLine($"Error initializing drag and resize functionality: {ex.Message}");
             }
         }
     }
