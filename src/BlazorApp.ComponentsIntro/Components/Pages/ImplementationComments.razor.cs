@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace BlazorApp.ComponentsIntro.Components.Pages;
 
@@ -11,6 +13,15 @@ public partial class ImplementationComments : ComponentBase
     private bool showComments = false;
     private string currentComments = string.Empty;
     private string textareaId = $"comments_{Guid.NewGuid():N}";
+    private string modalId = $"modal_{Guid.NewGuid():N}";
+    private string dragHandleId = $"dragHandle_{Guid.NewGuid():N}";
+    
+    // Drag functionality variables
+    private bool isDragging = false;
+    private double offsetX = 0;
+    private double offsetY = 0;
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
     /// <summary>
     /// The icon displayed on the toggle button. Supports Unicode, Bootstrap icons, 
@@ -31,7 +42,7 @@ public partial class ImplementationComments : ComponentBase
     /// Options: btn-sm (small), empty string (normal), btn-lg (large)
     /// </summary>
     [Parameter]
-    public string ButtonSize { get; set; } = "btn-sm";
+    public string ButtonSize { get; set; } = "";
 
     /// <summary>
     /// The text displayed on the toggle button and in tooltips 
@@ -70,19 +81,26 @@ public partial class ImplementationComments : ComponentBase
     /// Minimum number of rows for the textarea.
     /// </summary>
     [Parameter]
-    public int MinRows { get; set; } = 4;
+    public int MinRows { get; set; } = 8;
 
     /// <summary>
     /// Maximum number of rows for the textarea.
     /// </summary>
     [Parameter]
-    public int MaxRows { get; set; } = 15;
+    public int MaxRows { get; set; } = 20;
 
     /// <summary>
     /// Average characters per line used for calculating dynamic height.
     /// </summary>
     [Parameter]
     public int CharsPerLine { get; set; } = 65;
+
+    /// <summary>
+    /// The padding of the button using Bootstrap padding classes.
+    /// Options: px-1 (very tight), px-2 (tight), px-3 (normal), etc.
+    /// </summary>
+    [Parameter]
+    public string ButtonPadding { get; set; } = "p-1";
 
     /// <summary>
     /// Additional CSS classes to apply to the toggle button.
@@ -116,11 +134,26 @@ public partial class ImplementationComments : ComponentBase
     }
 
     /// <summary>
-    /// Toggles the visibility of the comments section.
+    /// Toggles the visibility of the comments section and initializes drag functionality.
     /// </summary>
-    private void ToggleComments()
+    private async Task ToggleComments()
     {
         showComments = !showComments;
+        
+        if (showComments)
+        {
+            // Small delay to ensure DOM is updated
+            await Task.Delay(10);
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("makeDraggable", modalId);
+            }
+            catch (Exception ex)
+            {
+                // Handle JS interop errors gracefully
+                Console.WriteLine($"Error initializing drag functionality: {ex.Message}");
+            }
+        }
     }
 
     /// <summary>
