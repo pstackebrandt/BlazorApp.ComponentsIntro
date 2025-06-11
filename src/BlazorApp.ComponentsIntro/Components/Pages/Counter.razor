@@ -3,7 +3,12 @@
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<div class="d-flex align-items-center gap-2">
+    <h1>Counter</h1>
+    <ImplementationComments 
+        ButtonText="Styling Notes"
+        DefaultContent="@titleStylingNotes" />
+</div>
 
 <p role="status">Current count: @currentCount</p>
 
@@ -14,19 +19,33 @@
 @code {
     private int currentCount = 0;
 
+    private string titleStylingNotes = @"Page Title Styling:
+
+• The blue color of the Counter title is controlled at the component level
+• Styling is defined in Counter.razor.css (CSS isolation file)
+• This approach provides scoped styling that only affects this component
+• CSS isolation prevents style conflicts with other components
+• The color rule targets the h1 element specifically within this component
+
+Benefits of Component-Level CSS:
+• Scoped styling - no global CSS pollution
+• Maintainable - styles are co-located with component
+• Predictable - styles only affect this component instance
+• Blazor automatically generates unique CSS class names for isolation";
+
     private string counterImplementationNotes = @"Component Design Notes:
 
-    • Uses InteractiveServer render mode for real-time updates
-    • Implements simple state management with private field
-    • Button click triggers immediate UI update via data binding
-    • Uses Bootstrap classes for consistent styling
-    • Follows Blazor naming conventions (PascalCase for public, camelCase for private)
+• Uses InteractiveServer render mode for real-time updates
+• Implements simple state management with private field
+• Button click triggers immediate UI update via data binding
+• Uses Bootstrap classes for consistent styling
+• Follows Blazor naming conventions (PascalCase for public, camelCase for private)
 
-    Implementation Considerations:
-    • Could be enhanced with min/max value validation
-    • Step increment could be made configurable via Parameter
-    • Consider adding reset functionality
-    • State is component-scoped, not persisted across page reloads";
+Implementation Considerations:
+• Could be enhanced with min/max value validation
+• Step increment could be made configurable via Parameter
+• Consider adding reset functionality
+• State is component-scoped, not persisted across page reloads";
 
     private void IncrementCount()
     {
