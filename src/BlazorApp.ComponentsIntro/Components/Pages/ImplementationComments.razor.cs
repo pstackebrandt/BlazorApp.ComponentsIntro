@@ -13,10 +13,39 @@ public partial class ImplementationComments : ComponentBase
     private string textareaId = $"comments_{Guid.NewGuid():N}";
 
     /// <summary>
-    /// The text displayed on the toggle button (e.g., "Implementation Notes").
+    /// The icon displayed on the toggle button. Supports Unicode, Bootstrap icons, 
+    /// or Font Awesome classes.
+    /// </summary>
+    [Parameter]
+    public string ButtonIcon { get; set; } = "🔧";
+
+    /// <summary>
+    /// The size of the button icon using Bootstrap font-size classes.
+    /// Options: fs-6 (small), fs-5 (default), fs-4 (larger), fs-3 (large), fs-2 (very large), fs-1 (huge)
+    /// </summary>
+    [Parameter]
+    public string IconSize { get; set; } = "fs-5";
+
+    /// <summary>
+    /// The size of the button using Bootstrap button size classes.
+    /// Options: btn-sm (small), empty string (normal), btn-lg (large)
+    /// </summary>
+    [Parameter]
+    public string ButtonSize { get; set; } = "btn-sm";
+
+    /// <summary>
+    /// The text displayed on the toggle button and in tooltips 
+    /// (e.g., "Implementation Notes").
     /// </summary>
     [Parameter]
     public string ButtonText { get; set; } = "Implementation Notes";
+
+    /// <summary>
+    /// Whether to show the button text alongside the icon. 
+    /// If false, only the icon is shown with text in tooltip.
+    /// </summary>
+    [Parameter]
+    public bool ShowButtonText { get; set; } = false;
 
     /// <summary>
     /// The label text displayed above the textarea when visible.
@@ -71,6 +100,11 @@ public partial class ImplementationComments : ComponentBase
     /// Gets the calculated number of rows based on content length.
     /// </summary>
     private int CalculatedRows => CalculateOptimalRows();
+
+    /// <summary>
+    /// Gets the tooltip text showing the current state and action.
+    /// </summary>
+    private string TooltipText => showComments ? $"Hide {ButtonText}" : $"Show {ButtonText}";
 
     /// <summary>
     /// Initializes the component with default content and visibility state.

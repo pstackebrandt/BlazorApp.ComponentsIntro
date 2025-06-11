@@ -1,8 +1,14 @@
 @* Reusable component for displaying implementation and design comments *@
 
 <!-- Toggle button for implementation comments -->
-<button class="btn btn-secondary @CssClass" @onclick="ToggleComments">
-    @(showComments ? "Hide" : "Show") @ButtonText
+<button class="btn btn-secondary @ButtonSize @CssClass" 
+        @onclick="ToggleComments"
+        title="@TooltipText"
+        aria-label="@TooltipText">
+    <span class="me-1 @IconSize">@ButtonIcon</span>@if (ShowButtonText)
+    {
+        <span>@(showComments ? "Hide" : "Show") @ButtonText</span>
+    }
 </button>
 
 @if (showComments)
