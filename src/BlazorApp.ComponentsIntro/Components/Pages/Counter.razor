@@ -9,8 +9,24 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<ImplementationComments CssClass="ms-2" DefaultContent="@counterImplementationNotes" />
+
 @code {
     private int currentCount = 0;
+
+    private string counterImplementationNotes = @"Component Design Notes:
+
+    • Uses InteractiveServer render mode for real-time updates
+    • Implements simple state management with private field
+    • Button click triggers immediate UI update via data binding
+    • Uses Bootstrap classes for consistent styling
+    • Follows Blazor naming conventions (PascalCase for public, camelCase for private)
+
+    Implementation Considerations:
+    • Could be enhanced with min/max value validation
+    • Step increment could be made configurable via Parameter
+    • Consider adding reset functionality
+    • State is component-scoped, not persisted across page reloads";
 
     private void IncrementCount()
     {

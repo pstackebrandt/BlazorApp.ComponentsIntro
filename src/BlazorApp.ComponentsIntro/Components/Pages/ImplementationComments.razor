@@ -1,0 +1,21 @@
+@* Reusable component for displaying implementation and design comments *@
+
+<!-- Toggle button for implementation comments -->
+<button class="btn btn-secondary @CssClass" @onclick="ToggleComments">
+    @(showComments ? "Hide" : "Show") @ButtonText
+</button>
+
+@if (showComments)
+{
+    <div class="mt-3">
+        <label for="@textareaId" class="form-label">
+            <strong>@LabelText</strong>
+        </label>
+        <textarea id="@textareaId" 
+                  class="form-control" 
+                  rows="@CalculatedRows" 
+                  @bind="currentComments"
+                  placeholder="@Placeholder">
+        </textarea>
+    </div>
+} 
