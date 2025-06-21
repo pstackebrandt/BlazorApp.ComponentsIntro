@@ -1,14 +1,22 @@
 using BlazorApp.ComponentsIntro.Components;
 
-var builder = WebApplication.CreateBuilder(args);
+// Blazor Server application
+// ==============================================
+// This app runs completely on the server. UI interactions are synchronized between browser and server via SignalR connections.
+// We don't need another project to run the app.
 
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+// Create Blazor Web Application
+// -----------------------------
+var webAppBuilder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+// Register server-side interactive components
+webAppBuilder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents(); 
 
-// Configure the HTTP request pipeline.
+var app = webAppBuilder.Build();
+
+// Configure the HTTP request pipeline
+// -------------------------------------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -17,12 +25,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
+// Map resources
+// ------------------------
 app.MapStaticAssets();
+
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode(); // Map Razor components
 
 app.Run();
